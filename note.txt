@@ -1,0 +1,23 @@
+
+----Chỉnh trong DATABASE PASSWORD !!!!---(MD5-32char) (mã hóa mật khẩu)
+ALTER TABLE user MODIFY COLUMN password VARCHAR(50);
+
+NHỚ VÀO __INIT__ CHỈNH LẠI THÔNG SỐ MYSQL
+
+
+
+sdt -> xu ly
+DATABASE : xu ly lai- done
+WORKFLOW: CHI TIET KHOA HOC
+
+THÊM CỘT IMAGE VÀ COURSE CỦA MODELS- > MYSQL
+models -> usermixin done
+XỬ lý DB mới của A hào -> Schedule details....done
+--Course Image Link Added!
+--Age Enum?
+FIX COURSE_DETAIL SKETCH NẾU CẦN
+
+
+PAYMENT : PAYOS
+
+test_payment_succes: http://127.0.0.1:5000/test-payment-success/(id trong bang Enrolment)

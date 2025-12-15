@@ -1,0 +1,117 @@
+{% extends 'layout/base.html' %}
+
+{% block hero_block %}
+<div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <h1 class="hero-title text-uppercase">Chinh phục mục tiêu của bạn!</h1>
+        <p class="lead mb-4 fs-4">Hệ thống đào tạo chuẩn quốc tế - Cam kết đầu ra theo chuẩn của BGD</p>
+
+        <form action="/" method="GET">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="search-container-hero">
+                        <div class="input-group input-group-lg border-0 p-1">
+                            <span class="input-group-text bg-transparent border-0 ms-2 text-muted">🔍</span>
+
+                            <input type="text" name="kw" class="form-control border-0 shadow-none bg-transparent"
+                                   placeholder="Tìm khóa học (VD: IELTS...)" value="{{ request.args.get('kw', '') }}">
+
+                            <select name="age" class="form-select border-0 shadow-none border-start bg-transparent" style="max-width: 160px;">
+                                <option value="" {% if not age_filter %}selected{% endif %}>Độ tuổi</option>
+                                <option value="1" {% if age_filter == '1' %}selected{% endif %}>Trẻ em</option>
+                                <option value="2" {% if age_filter == '2' %}selected{% endif %}>Thiếu niên</option>
+                                <option value="3" {% if age_filter == '3' %}selected{% endif %}>Người lớn</option>
+                            </select>
+
+                            <button class="btn btn-primary rounded-pill px-4 fw-bold ms-2" type="submit">TÌM KIẾM</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+<div id="target-scroll-position" class="text-center mb-5 mt-5 pt-4">
+    <h2 class="fw-bold text-primary">CÁC KHÓA HỌC NỔI BẬT</h2>
+    <p class="text-muted">Lộ trình học tập được cá nhân hóa dành riêng cho bạn</p>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    {% for c in courses %}
+    <div class="col course-card-animate">
+        <div class="course-card h-100 d-flex flex-column shadow-sm">
+            <div class="course-img-container">
+                {% if c.image and c.image.startswith('http') %}
+                <img src="{{ c.image }}" alt="{{ c.name }}"
+                     style="width:100%; height:100%; object-fit:cover; transition: transform 0.5s;">
+                {% else %}
+                <img src="https://res.cloudinary.com/dmhnfoc9i/image/upload/v1764749339/course_placeholder2_zmqagp.jpg"
+                     alt="{{ c.name }}" style="width:100%; height:100%; object-fit:cover;">
+                {% endif %}
+            </div>
+
+            <div class="course-card-body d-flex flex-column flex-grow-1">
+                <h5 class="fw-bold text-uppercase mb-2 text-primary">{{ c.name }}</h5>
+
+                <div class="mb-3 small text-secondary">
+                    <span class="me-2 badge bg-info text-dark">{{ c.age.name }}</span>
+                    <span><i class="fas fa-layer-group"></i> {{ c.level.name }}</span>
+                </div>
+
+                <p class="text-muted mb-4 flex-grow-1">
+                    {{ c.course_description or "Khóa học chất lượng cao..." }}
+                </p>
+
+                <h5 class="text-danger fw-bold mb-3">
+                    {{ "{:,.0f}".format(c.fee) }} VNĐ
+                </h5>
+
+                <div class="mt-auto d-grid gap-2 d-md-flex justify-content-between">
+                    <a href="{{ url_for('course_detail', course_id=c.id) }}" class="btn btn-outline-primary rounded-pill px-4 flex-grow-1">CHI TIẾT</a>
+
+                    <a href="{{ url_for('course_detail', course_id=c.id) }}#classList"
+                       class="btn btn-primary rounded-pill px-4 flex-grow-1 fw-bold">
+                       ĐĂNG KÝ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if not courses %}
+    <div class="col-12">
+        <div class="alert alert-warning text-center">
+            Không tìm thấy khóa học nào phù hợp.
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if pages > 1 %}
+<nav aria-label="Page navigation" class="mt-5 mb-5">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=current_page-1, kw=request.args.get('kw', ''), age=age_filter) }}" aria-label="Previous">«</a>
+        </li>
+
+        {% for idx in range(1, pages + 1) %}
+        <li class="page-item {% if idx == current_page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=idx, kw=request.args.get('kw', ''), age=age_filter) }}">{{ idx }}</a>
+        </li>
+        {% endfor %}
+
+        <li class="page-item {% if current_page == pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=current_page+1, kw=request.args.get('kw', ''), age=age_filter) }}" aria-label="Next">»</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

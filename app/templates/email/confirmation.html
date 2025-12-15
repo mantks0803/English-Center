@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+        .header { background-color: #0d6efd; color: white; padding: 15px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { padding: 20px; }
+        .info-box { background-color: #f8f9fa; padding: 15px; border-left: 5px solid #0d6efd; margin: 15px 0; }
+        .footer { font-size: 12px; text-align: center; color: #777; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>ĐĂNG KÝ THÀNH CÔNG!</h2>
+        </div>
+        <div class="content">
+            <p>Xin chào <strong>{{ user.name }}</strong>,</p>
+            <p>Cảm ơn bạn đã hoàn tất thanh toán và đăng ký thành công khóa học tại English Center.</p>
+
+            <div class="info-box">
+                <p><strong>Khóa học:</strong> {{ course.name }}</p>
+                <p><strong>Lớp:</strong> {{ classroom.name }}</p>
+                <p><strong>Ngày khai giảng:</strong> {{ classroom.start_date.strftime('%d/%m/%Y') }}</p>
+                <p><strong>Học phí:</strong> {{ "{:,.0f}".format(course.fee) }} VNĐ</p>
+            </div>
+
+            <p>Vui lòng đến lớp đúng giờ để buổi học đạt hiệu quả tốt nhất.</p>
+            <p>Trân trọng,<br>Đội ngũ English Center.</p>
+        </div>
+        <div class="footer">
+            Đây là email tự động, vui lòng không trả lời email này.
+        </div>
+    </div>
+</body>
+</html>

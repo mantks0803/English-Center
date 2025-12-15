@@ -1,0 +1,230 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body p-4">
+            <h3 class="fw-bold text-uppercase text-primary mb-4 border-bottom pb-2">THÔNG TIN KHÓA HỌC</h3>
+
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="border rounded p-2 bg-light course-img-wrapper">
+                        {% if course.image and course.image.startswith('http') %}
+                        <img src="{{ course.image }}" class="img-fluid rounded course-detail-img"
+                             alt="{{ course.name }}">
+                        {% else %}
+                        <img src="https://res.cloudinary.com/dmhnfoc9i/image/upload/v1764749339/course_placeholder2_zmqagp.jpg"
+                             class="img-fluid rounded course-detail-img" alt="Placeholder">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+
+                    <h2 class="fw-bold text-primary text-uppercase mb-3">{{ course.name }}</h2>
+
+                    <div class="row row-cols-md-2 g-3">
+                        <div class="col">
+                            <div class="p-3 border rounded h-100 bg-white shadow-sm">
+                                <small class="text-uppercase text-muted d-block fw-bold">Mã khóa học</small>
+                                <p class="mb-0 fs-5 fw-bold text-dark">{{ course.id }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="p-3 border rounded h-100 bg-white shadow-sm">
+                                <small class="text-uppercase text-muted d-block fw-bold">Độ tuổi</small>
+                                <p class="mb-0 fs-5 fw-bold text-info"><i class="fas fa-child me-2"></i>{{
+                                    course.age.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="p-3 border rounded h-100 bg-white shadow-sm">
+                                <small class="text-uppercase text-muted d-block fw-bold">Trình độ</small>
+                                <p class="mb-0 fs-5 fw-bold text-warning"><i class="fas fa-layer-group me-2"></i>{{
+                                    course.level.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="p-3 border rounded h-100 bg-white shadow-sm">
+                                <small class="text-uppercase text-muted d-block fw-bold">Thời lượng</small>
+                                <p class="mb-0 fs-5 fw-bold"><i class="far fa-clock me-2"></i>{{ course.duration_hour }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded h-100 bg-light-danger shadow-sm d-flex flex-column justify-content-center">
+                                <small class="text-uppercase text-muted d-block fw-bold">Học phí trọn gói</small>
+                                <p class="mb-0 fs-3 fw-bolder text-danger">
+                                    {{ "{:,.0f}".format(course.fee) }} VNĐ
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded h-100 bg-white shadow-sm course-desc-box">
+                                <small class="text-uppercase text-muted d-block fw-bold mb-1">Mô tả:</small>
+                                <p class="mb-0 text-muted small text-justify">
+                                    {{ course.course_description or "Chương trình đào tạo chuẩn quốc tế, giáo trình hiện
+                                    đại giúp học viên phát triển toàn diện 4 kỹ năng Nghe - Nói - Đọc - Viết." }}
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="classList" class="text-center mb-4 pt-3">
+        <h2 class="fw-bolder text-primary text-uppercase" style="letter-spacing: 1px;">
+            <i class="fas fa-edit me-2"></i> ĐĂNG KÝ LỚP HỌC
+        </h2>
+        <div class="bg-primary mx-auto mt-2" style="width: 80px; height: 4px; border-radius: 2px;"></div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-primary text-white fw-bold text-uppercase">
+                    <i class="fas fa-calendar-alt me-2"></i> Chọn Lớp Học
+                </div>
+                <div class="card-body p-0">
+                    {% if classes %}
+                    <div class="list-group list-group-flush">
+                        {% for cls in classes %}
+                        {% set current_students = cls.enrollments|length %}
+
+                        <label class="list-group-item list-group-item-action d-flex align-items-center justify-content-between cursor-pointer class-item py-3 px-4"
+                               style="cursor: pointer;">
+
+                            <div class="d-flex align-items-center w-100">
+                                <input class="form-check-input me-3 class-selector" type="radio" name="selected_class"
+                                       value="{{ cls.id }}"
+                                       data-name="{{ cls.name }}"
+                                       data-id="{{ cls.id }}"
+                                       data-start="{{ cls.start_date.strftime('%d/%m/%Y') }}"
+                                       data-end="{{ cls.end_date.strftime('%d/%m/%Y') }}"
+                                       data-teacher="{{ cls.teacher.name if cls.teacher else 'Đang cập nhật' }}"
+                                       data-students="{{ current_students }}/{{ cls.max_student }}"
+                                       data-schedule="{{ cls.schedules_display }}">
+
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold text-dark">{{ cls.name }}</h6>
+                                    <small class="text-muted d-block"><i class="far fa-calendar-check me-1"></i> {{
+                                        cls.start_date.strftime('Khai giảng: %d/%m/%Y') }}</small>
+                                    <small class="text-primary fw-bold d-block"><i class="fas fa-clock me-1"></i> {{
+                                        cls.schedules_display }}</small>
+                                </div>
+                            </div>
+
+                            {% if current_students >= cls.max_student %}
+                            <span class="badge bg-danger rounded-pill py-2 px-3 ms-2">Full</span>
+                            {% else %}
+                            <span class="badge bg-success rounded-pill py-2 px-3 ms-2">Còn {{ cls.max_student - current_students }} chỗ</span>
+                            {% endif %}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning text-center m-3">Hiện chưa có lớp nào được mở cho khóa học này.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-light fw-bold text-uppercase border-bottom">
+                    <i class="fas fa-info-circle me-2"></i> Chi tiết Lớp học
+                </div>
+                <div class="card-body">
+
+                    <div class="p-3 text-center" id="class-detail-placeholder">
+                        <i class="fas fa-hand-point-left fa-3x text-muted mb-3"></i>
+                        <p class="mb-0 text-muted fw-bold">Vui lòng chọn một lớp học bên trái để xem thông tin chi
+                            tiết.</p>
+                    </div>
+
+                    <div id="class-details-container" style="display: none;">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <small class="text-muted d-block fw-bold">Tên Lớp:</small>
+                                <div class="fs-5 fw-bold text-dark border-bottom pb-1" id="detail_name"></div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <small class="text-muted d-block fw-bold">ID:</small>
+                                <div class="fs-5 fw-bold text-primary" id="detail_id"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row row-cols-md-2 g-3 mb-4">
+                            <div class="col">
+                                <div class="p-3 border rounded h-100 bg-light">
+                                    <small class="text-uppercase text-muted d-block fw-bold"><i
+                                            class="far fa-calendar-alt me-1"></i> Ngày học</small>
+                                    <p class="mb-0 fw-bold text-success" id="detail_dates_display"></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-3 border rounded h-100 bg-light">
+                                    <small class="text-uppercase text-muted d-block fw-bold"><i
+                                            class="fas fa-user-tie me-1"></i> Giáo viên</small>
+                                    <p class="mb-0 fw-bold text-dark" id="detail_teacher"></p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-3 border rounded h-100 bg-light">
+                                    <small class="text-uppercase text-muted d-block fw-bold"><i
+                                            class="fas fa-users me-1"></i> Sĩ số (Học viên/Max)</small>
+                                    <p class="mb-0 fw-bold text-danger" id="detail_slots"></p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="p-3 border rounded h-100 bg-light-info">
+                                    <small class="text-uppercase text-muted d-block fw-bold"><i
+                                            class="fas fa-clock me-1"></i> Lịch học chi tiết</small>
+                                    <p class="mb-0 fs-5 fw-bolder text-primary" id="detail_schedule"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-primary btn-lg w-100 fw-bold py-3" id="btnRegister" disabled>
+                                ĐĂNG KÝ NGAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnRegister = document.getElementById('btnRegister');
+
+        if(btnRegister) {
+            btnRegister.addEventListener('click', function() {
+                // Tìm lớp đang được chọn
+                const selectedRadio = document.querySelector('input[name="selected_class"]:checked');
+                if (selectedRadio) {
+                    const classId = selectedRadio.value;
+                    // Chuyển hướng sang trang thanh toán
+                    window.location.href = "/checkout/" + classId;
+                } else {
+                    alert("Vui lòng chọn một lớp học!");
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

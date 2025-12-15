@@ -1,0 +1,131 @@
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark main-header shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <div class="brand-logo-container">
+                    <span class="brand-text-top">ENGLISH</span>
+                    <span class="brand-text-bottom">CENTER</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Giới thiệu
+                        </a>
+                        <ul class="dropdown-menu shadow" aria-labelledby="navbarDropdown1">
+                            <li>
+                                <a class="dropdown-item intro-modal-trigger" href="#"
+                                   data-title="Về Chúng Tôi"
+                                   data-img="https://res.cloudinary.com/dmhnfoc9i/image/upload/v1765533589/uss_ksyh1y.avif"
+                                   data-content="Trung tâm ngoại ngữ uy tín, chất lượng, là lựa chọn hàng đầu dành cho mọi người. Hệ thống đào tạo chuẩn quốc tế - Cam kết đầu ra theo chuẩn của BGD.">
+                                    Về chúng tôi
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item intro-modal-trigger" href="#"
+                                   data-title="Đội Ngũ Giảng Viên"
+                                   data-img="https://res.cloudinary.com/dmhnfoc9i/image/upload/v1765533590/teachers_ps49s5.jpg"
+                                   data-content="Giảng viên đào tạo có đầy đủ chứng chỉ quốc tế theo chuẩn bộ giáo dục, luôn đồng hành cùng học viên trong quá trình học, sẵn sàng đồng hành cùng học viên trên con đường chinh phục ngoại ngữ!">
+                                    Đội ngũ giảng viên
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item intro-modal-trigger" href="#"
+                                   data-title="Cơ Sở Vật Chất"
+                                   data-img="https://res.cloudinary.com/dmhnfoc9i/image/upload/v1765533589/trangthietbi_ldleah.jpg"
+                                   data-content="Cơ sở vật chất hiện đại, được trang bị các không gian tự học, phòng học rộng rãi, đầy đủ trang thiết bị, các cơ sở trải dài trên khắp đất nước, cung cấp địa điểm thuận tiện cho quá trình học tập.">
+                                    Cơ sở vật chất
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown2" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Khóa học
+                        </a>
+                        <ul class="dropdown-menu shadow" aria-labelledby="navbarDropdown2">
+                            <li><a class="dropdown-item" href="{{ url_for('index', age=3) }}">Tiếng Anh Người Lớn</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index', age=1) }}">Tiếng Anh Trẻ Em</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index', kw='chung-chi') }}">Luyện thi IELTS/TOEIC</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#footer">Liên hệ</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    {% if current_user.is_authenticated %}
+                    <span class="text-white me-3 d-none d-md-block fw-bold" style="font-size: 0.95rem;">
+                           Xin chào, {{ current_user.name }}
+                        </span>
+
+                    <div class="dropdown text-end">
+                        <a href="#" class="d-block link-light text-decoration-none dropdown-toggle" id="dropdownUser1"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if current_user.avatar %}
+                                {% if current_user.avatar.startswith('http') %}
+                                <img src="{{ current_user.avatar }}" alt="avatar" width="32" height="32"
+                                     class="rounded-circle border border-white">
+                                {% else %}
+                                <img src="{{ url_for('static', filename=current_user.avatar) }}" alt="avatar" width="32"
+                                     height="32" class="rounded-circle border border-white">
+                                {% endif %}
+                            {% else %}
+                            <i class="fas fa-user-circle fa-2x"></i>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
+                            <li><h6 class="dropdown-header">TK: {{ current_user.username }}</h6></li>
+                            <li><a class="dropdown-item" href="{{ url_for('student_profile') }}">Hồ sơ của tôi</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="/login" class="btn btn-outline-light rounded-pill px-4 fw-bold btn-sm">
+                        <i class="fas fa-sign-in-alt me-2"></i> Đăng nhập
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="modal fade" id="introModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold text-uppercase" id="introModalLabel"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <div class="col-md-6">
+                        <img id="introModalImg" src="" class="img-fluid h-100 w-100 object-fit-cover" alt="Intro Image" style="min-height: 300px;">
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center bg-light">
+                        <div class="p-4">
+                            <h4 class="text-primary fw-bold mb-3">English Center</h4>
+                            <p id="introModalContent" class="text-muted text-justify" style="line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

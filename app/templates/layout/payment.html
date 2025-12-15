@@ -1,0 +1,121 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+
+    <div class="mb-4">
+        <h2 class="fw-bold text-primary text-uppercase">Xác nhận thanh toán</h2>
+        <p class="text-muted">Vui lòng kiểm tra kỹ thông tin trước khi tiến hành thanh toán.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-user-graduate me-2"></i> 1. Thông tin học
+                        viên</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold small">Họ và tên</label>
+                            <input type="text" class="form-control bg-light" value="{{ current_user.name }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold small">Email</label>
+                            <input type="text" class="form-control bg-light" value="{{ current_user.email }}" readonly>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label text-muted fw-bold small">Số điện thoại</label>
+                            <input type="text" class="form-control bg-light" value="{{ current_user.phone_number }}"
+                                   readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-wallet me-2"></i> 2. Phương thức thanh toán
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="payment-option selected">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input mt-0" type="radio" name="paymentMethod" id="payosMethod"
+                                   checked>
+                            <label class="form-check-label ms-3 w-100 cursor-pointer" for="payosMethod">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="d-block fw-bold text-dark">Chuyển khoản Ngân hàng (VietQR)</span>
+                                        <small class="text-muted">Quét mã QR - Tự động xác nhận 24/7</small>
+                                    </div>
+                                    <i class="fas fa-qrcode fa-2x text-primary"></i>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 100px; z-index: 100;">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold text-uppercase"><i class="fas fa-receipt me-2"></i> Thông tin đơn hàng</h5>
+                </div>
+                <div class="card-body p-4">
+
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            {% if classroom.course.image %}
+                            <img src="{{ classroom.course.image }}" alt="Course" class="rounded" width="60" height="60"
+                                 style="object-fit: cover;">
+                            {% else %}
+                            <img src="https://res.cloudinary.com/dmhnfoc9i/image/upload/v1764749339/course_placeholder2_zmqagp.jpg"
+                                 class="rounded" width="60" height="60" style="object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1 fw-bold text-primary">{{ classroom.course.name }}</h6>
+                            <small class="text-muted d-block">Lớp: <span
+                                    class="fw-bold text-dark">{{ classroom.name }}</span></small>
+                            <small class="text-muted d-block">ID: {{ classroom.id }}</small>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary border-opacity-10">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Học phí gốc:</span>
+                        <span class="fw-bold">{{ "{:,.0f}".format(classroom.course.fee) }} đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Giảm giá:</span>
+                        <span class="text-success fw-bold">- 0 đ</span>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fs-5 fw-bold text-dark">TỔNG CỘNG:</span>
+                        <span class="fs-4 fw-bolder text-danger">{{ "{:,.0f}".format(classroom.course.fee) }} đ</span>
+                    </div>
+
+                    <button id="btn-process-payment"
+                            class="btn btn-primary w-100 py-3 fw-bold text-uppercase shadow-sm"
+                            data-class-id="{{ classroom.id }}">
+                        <i class="fas fa-lock me-2"></i> THANH TOÁN NGAY
+                    </button>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted"><i class="fas fa-shield-alt me-1"></i> Bảo mật thanh toán 100%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
