@@ -1,6 +1,7 @@
 # app/services/payos_service.py
 
 # Bỏ ItemData, CreatePaymentLinkRequest (*)
+#Why TOY KO THE SU DUMG ITEM DATA VA CREATEPAYMENTLINK :(
 from payos import PayOS
 from flask import url_for
 import datetime

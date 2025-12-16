@@ -197,9 +197,15 @@
                         </div>
 
                         <div class="mt-4">
-                            <button class="btn btn-primary btn-lg w-100 fw-bold py-3" id="btnRegister" disabled>
-                                ĐĂNG KÝ NGAY
-                            </button>
+                            {% if current_user.is_authenticated and current_user.id.startswith('102') %}
+                                <a href="#" id="btnRegister" class="btn btn-warning w-100 fw-bold py-3 text-dark shadow-sm" disabled>
+                                    <i class="fas fa-file-invoice-dollar me-2"></i> LẬP PHIẾU THU
+                                </a>
+                            {% else %}
+                                <button class="btn btn-primary btn-lg w-100 fw-bold py-3 shadow-sm" id="btnRegister" disabled>
+                                    ĐĂNG KÝ NGAY
+                                </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -208,23 +214,4 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const btnRegister = document.getElementById('btnRegister');
-
-        if(btnRegister) {
-            btnRegister.addEventListener('click', function() {
-                // Tìm lớp đang được chọn
-                const selectedRadio = document.querySelector('input[name="selected_class"]:checked');
-                if (selectedRadio) {
-                    const classId = selectedRadio.value;
-                    // Chuyển hướng sang trang thanh toán
-                    window.location.href = "/checkout/" + classId;
-                } else {
-                    alert("Vui lòng chọn một lớp học!");
-                }
-            });
-        }
-    });
-</script>
 {% endblock %}

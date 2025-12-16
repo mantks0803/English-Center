@@ -152,3 +152,28 @@ def delete_enrollment(enrollment_id):
         db.session.rollback()
         print(f"Lỗi xóa đăng ký: {ex}")
         return False
+
+
+def get_student_by_id(student_id):
+
+    return Student.query.get(student_id)
+
+
+def get_cashier_bills(cashier_id):
+
+    return db.session.query(
+        Bill.id.label('bill_id'),
+        Bill.status.label('bill_status'),
+        Bill.create_date,
+        Bill.unit_price,
+        Student.name.label('student_name'),
+        Student.id.label('student_id'),
+        Course.name.label('course_name'),
+        Classroom.name.label('class_name')
+    ).join(Enrollment, Bill.enrollment_id == Enrollment.id) \
+        .join(Student, Enrollment.student_id == Student.id) \
+        .join(Classroom, Enrollment.class_id == Classroom.id) \
+        .join(Course, Classroom.course_id == Course.id) \
+        .filter(Bill.cashier_id == cashier_id) \
+        .order_by(Bill.create_date.desc()) \
+        .all()

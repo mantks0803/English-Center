@@ -1,0 +1,169 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h3 class="fw-bold text-dark m-0 text-uppercase">
+                <i class="fas fa-file-invoice-dollar me-2 text-primary"></i> Lập Hóa Đơn Học Phí
+            </h3>
+            <div class="text-end text-muted small">Thu ngân: <strong class="text-dark">{{ current_user.name }}</strong></div>
+        </div>
+        <div class="card-body p-4">
+            <form method="POST" id="invoiceForm">
+                <div class="row">
+                    <div class="col-md-8 border-end pe-4">
+                        <h5 class="fw-bold text-secondary border-bottom pb-2 mb-3">1. THÔNG TIN HÓA ĐƠN</h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Mã học viên (*)</label>
+                                <input type="text" name="student_id" id="studentIdInput" class="form-control form-control-lg bg-light" placeholder="Nhập ID (VD: 103...)" required>
+                                <div id="studentNameDisplay" class="form-text text-primary fw-bold mt-2"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Họ và Tên</label>
+                                <input type="text" id="studentNameInput" class="form-control form-control-lg" readonly placeholder="...">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Khóa học / Lớp</label>
+                                <input type="text" class="form-control bg-white" value="{{ classroom.course.name }} - {{ classroom.name }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Ngày lập phiếu</label>
+                                <input type="text" class="form-control" value="Hôm nay" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Hình thức thanh toán</label>
+                            <select class="form-select" id="paymentMethodSelect">
+                                <option value="CASH">💵 Tiền mặt (Tại quầy)</option>
+                                <option value="QR">💳 Chuyển khoản (QR Code)</option>
+                            </select>
+                        </div>
+
+                        <div class="alert alert-secondary mt-4 text-end">
+                            <span class="fs-5 text-muted me-2">Tổng tiền phải thu:</span>
+                            <span class="fs-2 fw-bold text-danger">{{ "{:,.0f}".format(classroom.course.fee) }} VNĐ</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 ps-4 d-flex flex-column justify-content-center gap-3">
+                        <h5 class="fw-bold text-secondary border-bottom pb-2 mb-3">2. TÁC VỤ</h5>
+                        
+                        <div id="cashButtons" class="d-grid gap-2">
+                            <button type="submit" name="action" value="CASH" class="btn btn-primary btn-lg fw-bold shadow-sm">
+                                <i class="fas fa-save me-2"></i> LƯU HÓA ĐƠN
+                            </button>
+
+                            <button type="submit" name="action" value="CASH_EXPORT" class="btn btn-success btn-lg fw-bold shadow-sm">
+                                <i class="fas fa-file-pdf me-2"></i> LƯU & XUẤT PDF
+                            </button>
+                        </div>
+
+                        <div id="qrButtons" class="d-grid gap-2" style="display: none;">
+                            <button type="submit" name="action" value="QR" class="btn btn-warning btn-lg fw-bold shadow-sm text-dark">
+                                <i class="fas fa-qrcode me-2"></i> TẠO QR THANH TOÁN
+                            </button>
+                        </div>
+
+                        <hr>
+                        <a href="{{ url_for('course_detail', course_id=classroom.course_id) }}" class="btn btn-outline-danger btn-lg">
+                            <i class="fas fa-times-circle me-2"></i> HỦY BỎ
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if new_bill_data %}
+<div id="invoiceTemplate" style="display: none;">
+    <div style="padding: 40px; font-family: 'DejaVu Sans', sans-serif; border: 2px solid #333; width: 600px; margin: 0 auto; background: #fff; color: #000;">
+        <div style="text-align: center; border-bottom: 2px dashed #333; padding-bottom: 20px; margin-bottom: 30px;">
+            <h2 style="margin: 0; color: #0d6efd; text-transform: uppercase; font-size: 24px;">ENGLISH CENTER</h2>
+            <p style="margin: 5px 0;">Đ/c: 97 Võ Văn Tần, Phường Xuân Hòa, TP.HCM</p>
+            <p style="margin: 5px 0;">Hotline: 1900 100  - Email: dephucau@gmail.com</p>
+        </div>
+
+        <h2 style="text-align: center; text-transform: uppercase; margin-bottom: 30px; font-weight: bold;">HÓA ĐƠN THANH TOÁN</h2>
+
+        <table style="width: 100%; margin-bottom: 20px; font-size: 14px;">
+            <tr>
+                <td style="padding: 8px 0; font-weight: bold; width: 40%;">Số phiếu:</td>
+                <td style="text-align: right;">#{{ new_bill_data.id }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; font-weight: bold;">Ngày lập:</td>
+                <td style="text-align: right;">{{ new_bill_data.date }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; font-weight: bold;">Thu ngân:</td>
+                <td style="text-align: right;">{{ new_bill_data.cashier_name }}</td>
+            </tr>
+             <tr>
+                <td colspan="2"><hr style="border-top: 1px solid #ddd; margin: 10px 0;"></td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; font-weight: bold;">Học viên:</td>
+                <td style="text-align: right;">{{ new_bill_data.student_name }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; font-weight: bold;">Mã HV:</td>
+                <td style="text-align: right;">{{ new_bill_data.student_id }}</td>
+            </tr>
+        </table>
+
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 30px; border: 1px solid #eee;">
+            <p style="margin: 5px 0; font-size: 15px;"><strong>Khóa học:</strong> {{ new_bill_data.course_name }}</p>
+            <p style="margin: 5px 0; font-size: 15px;"><strong>Lớp:</strong> {{ new_bill_data.class_name }}</p>
+            <hr style="margin: 15px 0;">
+            <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: #dc3545;">
+                <span>TỔNG CỘNG:</span>
+                <span>{{ new_bill_data.amount }} VNĐ</span>
+            </div>
+            <p style="text-align: right; margin-top: 10px; font-style: italic; font-size: 12px; color: #666;">(Đã bao gồm thuế VAT)</p>
+        </div>
+
+
+    </div>
+</div>
+//?
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Lay cai mau hoa don
+        const element = document.getElementById('invoiceTemplate');
+
+        // Hien len de chup hinh
+        element.style.display = 'block';
+
+        // Cau hinh PDF
+        var opt = {
+            margin:       10,
+            filename:     'Hoa_don_{{ new_bill_data.id }}.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Chay lenh in
+        html2pdf().from(element).set(opt).save().then(function(){
+            // In xong thi an di va chuyen trang
+            element.style.display = 'none';
+            alert("Đã xuất hóa đơn PDF thành công!");
+
+            // Chuyen ve trang lich su
+            setTimeout(function(){
+                window.location.href = "{{ url_for('student_profile') }}";
+            }, 1000);
+        });
+    });
+</script>
+{% endif %}
+
+{% endblock %}

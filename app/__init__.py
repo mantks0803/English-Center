@@ -15,7 +15,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 
-# 1. Điền email 
+# 1. Điền email
 app.config['MAIL_USERNAME'] = 'dephucau@gmail.com'
 
 # 2. Điền mật khẩu ứng dụng

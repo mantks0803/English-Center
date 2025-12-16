@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     // ==========================================
-    // 1. HEADER STICKY LOGIC
+    // 1. HEADER STICKY
     // ==========================================
     const header = document.querySelector('.main-header');
     if (header) {
@@ -10,21 +10,16 @@ document.addEventListener("DOMContentLoaded", function() {
             document.body.style.setProperty("--header-height", height + "px");
             document.body.classList.add("has-fixed-header");
         }
-
         window.addEventListener('load', updateHeaderHeight);
         window.addEventListener('resize', updateHeaderHeight);
-
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
         });
     }
 
     // ==========================================
-    // 2. MODAL THÔNG BÁO (login.html)
+    // 2. MODAL THÔNG BÁO
     // ==========================================
     const modalElement = document.getElementById('notificationModal');
     if (modalElement) {
@@ -33,28 +28,23 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ==========================================
-    // 3. SMOOTH SCROLL (index.html & header contact)
+    // 3. SMOOTH SCROLL
     // ==========================================
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('page') || urlParams.has('kw') || urlParams.has('age')) {
         const target = document.getElementById('target-scroll-position');
         if (target) {
             setTimeout(() => {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 150);
         }
     }
 
     // ==========================================
-    // 4. CLOUDINARY WIDGET (profile.html & register.html)
+    // 4. CLOUDINARY WIDGET
     // ==========================================
     const uploadBtn = document.getElementById("upload_widget");
-
     if (uploadBtn) {
-        // Cấu hình Cloudinary
         var myWidget = cloudinary.createUploadWidget({
             cloudName: 'dmhnfoc9i',
             uploadPreset: 'ml_default',
@@ -67,36 +57,28 @@ document.addEventListener("DOMContentLoaded", function() {
         }, (error, result) => {
             if (!error && result && result.event === "success") {
                 var imageUrl = result.info.secure_url;
-
-                // 1. Cập nhật ảnh Preview
                 const previewImg = document.getElementById("avatarPreview");
                 if (previewImg) previewImg.src = imageUrl;
 
-                // 2. Điền URL vào input ẩn (cho Register)
                 const avatarInput = document.getElementById("avatarInput");
                 if (avatarInput) avatarInput.value = imageUrl;
 
-                // 3. Điền URL vào input ẩn (cho Profile Update)
                 const newAvatarInput = document.getElementById("newAvatarInput");
                 if (newAvatarInput) newAvatarInput.value = imageUrl;
 
-                // 4. Nếu là trang Profile -> Tự động submit form
                 const updateForm = document.getElementById("avatarUpdateForm");
-                if (updateForm) {
-                    updateForm.submit();
-                }
+                if (updateForm) updateForm.submit();
             }
         });
-
-        uploadBtn.addEventListener("click", function(){
-            myWidget.open();
-        }, false);
+        uploadBtn.addEventListener("click", function(){ myWidget.open(); }, false);
     }
 
     // ==========================================
-    // 5. COURSE DETAIL LOGIC (course_detail.html)
+    // 5. LOGIC TRANG CHI TIẾT KHÓA HỌC
     // ==========================================
     const classRadios = document.querySelectorAll('.class-selector');
+    const btnRegister = document.getElementById('btnRegister');
+
     if (classRadios.length > 0) {
         const detailContainer = document.getElementById('class-details-container');
         const placeholder = document.getElementById('class-detail-placeholder');
@@ -107,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const detailTeacher = document.getElementById('detail_teacher');
         const detailSlots = document.getElementById('detail_slots');
         const detailSchedule = document.getElementById('detail_schedule');
-        const btnRegister = document.getElementById('btnRegister');
 
         function updateClassDetails(radio) {
             if(placeholder) placeholder.style.display = 'none';
@@ -128,7 +109,12 @@ document.addEventListener("DOMContentLoaded", function() {
             if(detailSlots) detailSlots.innerText = slots;
             if(detailSchedule) detailSchedule.innerText = schedule;
 
-            if(btnRegister) btnRegister.disabled = false;
+            if(btnRegister) {
+                btnRegister.disabled = false;
+                if (btnRegister.tagName === 'A') {
+                    btnRegister.setAttribute('href', "/pos/create-invoice/" + id);
+                }
+            }
         }
 
         classRadios.forEach(radio => {
@@ -139,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     this.closest('.list-group-item').classList.add('active');
                 }
             });
-
             radio.closest('label').addEventListener('click', function(e) {
                 if (e.target.tagName !== 'INPUT') {
                     const inputRadio = this.querySelector('.class-selector');
@@ -153,7 +138,6 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
-        // Tự động chọn lớp đầu tiên nếu có
         if(classRadios.length > 0) {
              classRadios[0].checked = true;
              updateClassDetails(classRadios[0]);
@@ -161,12 +145,22 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    if(btnRegister && btnRegister.tagName === 'BUTTON') {
+        btnRegister.addEventListener('click', function() {
+            const selectedRadio = document.querySelector('input[name="selected_class"]:checked');
+            if (selectedRadio) {
+                window.location.href = "/checkout/" + selectedRadio.value;
+            } else {
+                alert("Vui lòng chọn một lớp học!");
+            }
+        });
+    }
+
     // ==========================================
     // 6. HEADER INTRO
     // ==========================================
     const introTriggers = document.querySelectorAll('.intro-modal-trigger');
     const introModalElement = document.getElementById('introModal');
-
     if (introTriggers.length > 0 && introModalElement) {
         const introModal = new bootstrap.Modal(introModalElement);
         const modalTitle = document.getElementById('introModalLabel');
@@ -179,55 +173,151 @@ document.addEventListener("DOMContentLoaded", function() {
                 const title = this.getAttribute('data-title');
                 const img = this.getAttribute('data-img');
                 const content = this.getAttribute('data-content');
-
                 if(modalTitle) modalTitle.textContent = title;
                 if(modalImg) modalImg.src = img;
                 if(modalContent) modalContent.textContent = content;
-
                 introModal.show();
             });
         });
     }
 
     // ==========================================
-    // 7. PAYMENT PROCESS LOGIC -FINAL (12)
+    // 7. XỬ LÝ THANH TOÁN QR (Trang payment.html)
     // ==========================================
     const btnPayment = document.getElementById('btn-process-payment');
-
     if (btnPayment) {
         btnPayment.addEventListener('click', function() {
-            // 1. Disable nút để tránh click nhiều lần
             this.disabled = true;
             this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ĐANG XỬ LÝ...';
-
             const classId = this.getAttribute('data-class-id');
 
-            // 2. Gọi API tạo link thanh toán (Fetch API)
             fetch('/api/create-payment-link', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ class_id: classId })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
                     alert('Lỗi: ' + data.message);
-                    // Reset nút
                     btnPayment.disabled = false;
                     btnPayment.innerHTML = '<i class="fas fa-lock me-2"></i> THANH TOÁN NGAY';
                 } else {
-                    // 3. Chuyển hướng sang trang thanh toán của PayOS
                     window.location.href = data.checkoutUrl;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra khi kết nối server.');
+                alert('Mất kết nối server.');
                 btnPayment.disabled = false;
                 btnPayment.innerHTML = '<i class="fas fa-lock me-2"></i> THANH TOÁN NGAY';
             });
+        });
+    }
+
+    // ==========================================
+    // 8. LOGIC POS (THU NGÂN) - UPDATE MỚI
+    // ==========================================
+
+    // a. Tìm kiếm học viên
+    const studentIdInput = document.getElementById('studentIdInput');
+    if (studentIdInput) {
+        studentIdInput.addEventListener('change', function() {
+            let studentId = this.value;
+            if(studentId.length > 3) {
+                fetch('/api/student-info/' + studentId)
+                    .then(response => response.json())
+                    .then(data => {
+                        const nameDisplay = document.getElementById('studentNameDisplay');
+                        const nameInput = document.getElementById('studentNameInput');
+
+                        if (data.found) {
+                            if(nameInput) nameInput.value = data.name;
+                            if(nameDisplay) nameDisplay.innerHTML = '<i class="fas fa-check-circle"></i> Tìm thấy: ' + data.name;
+                        } else {
+                            if(nameInput) nameInput.value = '';
+                            if(nameDisplay) nameDisplay.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Không tìm thấy ID này!';
+                        }
+                    });
+            }
+        });
+    }
+
+    // b. Đổi nút bấm khi chọn Tiền mặt / QR
+    const paymentMethodSelect = document.getElementById('paymentMethodSelect');
+    const cashBtns = document.getElementById('cashButtons');
+    const qrBtns = document.getElementById('qrButtons');
+
+    function toggleButtons() {
+        if (!paymentMethodSelect) return;
+
+        if (paymentMethodSelect.value === 'CASH') {
+            if(cashBtns) cashBtns.style.display = 'grid';
+            if(qrBtns) qrBtns.style.display = 'none';
+        } else {
+            if(cashBtns) cashBtns.style.display = 'none';
+            if(qrBtns) qrBtns.style.display = 'grid';
+        }
+    }
+
+    if (paymentMethodSelect) {
+        toggleButtons();
+        paymentMethodSelect.addEventListener('change', toggleButtons);
+    }
+
+    // c. XỬ LÝ FORM HÓA ĐƠN
+    const invoiceForm = document.getElementById('invoiceForm');
+    if (invoiceForm) {
+        invoiceForm.addEventListener('submit', function(e) {
+            // Lấy cái nút mà người dùng vừa bấm (submitter)
+            const btnClicked = e.submitter;
+            const currentMethod = document.getElementById('paymentMethodSelect').value;
+
+            // TRƯỜNG HỢP 1: Bấm nút QR nhưng đang chọn Tiền mặt -> CHẶN
+            if (btnClicked && btnClicked.value === 'QR' && currentMethod === 'CASH') {
+                e.preventDefault(); // Dừng lại
+                alert("Phương thức thanh toán không hợp lệ! (Bạn đang chọn Tiền mặt)");
+                return;
+            }
+
+            // TRƯỜNG HỢP 2: Bấm nút Lưu Tiền mặt (hoặc Lưu & Xuất) -> HỎI XÁC NHẬN
+            if (btnClicked && (btnClicked.value === 'CASH' || btnClicked.value === 'CASH_EXPORT')) {
+                // Hiện popup xác nhận
+                let confirmAction = confirm("Xác nhận đã thu đủ tiền và muốn lưu hóa đơn?");
+
+                if (!confirmAction) {
+                    // Nếu chọn Cancel -> Dừng lại, không gửi form
+                    e.preventDefault();
+                }
+                // Nếu chọn OK -> Form tự động gửi đi (Server xử lý tiếp)
+            }
+        });
+    }
+
+    // ==========================================
+    // 9. AUTO PRINT PDF
+    // ==========================================
+    const invoiceTemplate = document.getElementById('invoiceTemplate');
+    if (invoiceTemplate) {
+        const filename = invoiceTemplate.getAttribute('data-filename');
+        const redirectUrl = invoiceTemplate.getAttribute('data-redirect-url');
+
+        invoiceTemplate.style.display = 'block';
+
+        var opt = {
+            margin:       10,
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().from(invoiceTemplate).set(opt).save().then(function(){
+            invoiceTemplate.style.display = 'none';
+            alert("Đã xuất hóa đơn PDF thành công!");
+            setTimeout(function(){
+                window.location.href = redirectUrl;
+            }, 1000);
         });
     }
 

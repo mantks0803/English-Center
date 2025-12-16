@@ -38,7 +38,9 @@
                                     Đội ngũ giảng viên
                                 </a>
                             </li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <a class="dropdown-item intro-modal-trigger" href="#"
                                    data-title="Cơ Sở Vật Chất"
@@ -56,9 +58,11 @@
                             Khóa học
                         </a>
                         <ul class="dropdown-menu shadow" aria-labelledby="navbarDropdown2">
-                            <li><a class="dropdown-item" href="{{ url_for('index', age=3) }}">Tiếng Anh Người Lớn</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index', age=3) }}">Tiếng Anh Người Lớn</a>
+                            </li>
                             <li><a class="dropdown-item" href="{{ url_for('index', age=1) }}">Tiếng Anh Trẻ Em</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('index', kw='chung-chi') }}">Luyện thi IELTS/TOEIC</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('index', kw='chung-chi') }}">Luyện thi
+                                IELTS/TOEIC</a></li>
                         </ul>
                     </li>
 
@@ -69,21 +73,25 @@
 
                 <div class="d-flex align-items-center">
                     {% if current_user.is_authenticated %}
-                    <span class="text-white me-3 d-none d-md-block fw-bold" style="font-size: 0.95rem;">
-                           Xin chào, {{ current_user.name }}
-                        </span>
+
+                    <div class="text-white me-3 d-none d-md-block fw-bold" style="font-size: 0.95rem;">
+                        {% if current_user.id.startswith('102') %}
+                        <span class="badge bg-warning text-dark me-2">THU NGÂN</span>
+                        {% endif %}
+                        Xin chào, {{ current_user.name }}
+                    </div>
 
                     <div class="dropdown text-end">
                         <a href="#" class="d-block link-light text-decoration-none dropdown-toggle" id="dropdownUser1"
                            data-bs-toggle="dropdown" aria-expanded="false">
                             {% if current_user.avatar %}
-                                {% if current_user.avatar.startswith('http') %}
-                                <img src="{{ current_user.avatar }}" alt="avatar" width="32" height="32"
-                                     class="rounded-circle border border-white">
-                                {% else %}
-                                <img src="{{ url_for('static', filename=current_user.avatar) }}" alt="avatar" width="32"
-                                     height="32" class="rounded-circle border border-white">
-                                {% endif %}
+                            {% if current_user.avatar.startswith('http') %}
+                            <img src="{{ current_user.avatar }}" alt="avatar" width="32" height="32"
+                                 class="rounded-circle border border-white">
+                            {% else %}
+                            <img src="{{ url_for('static', filename=current_user.avatar) }}" alt="avatar" width="32"
+                                 height="32" class="rounded-circle border border-white">
+                            {% endif %}
                             {% else %}
                             <i class="fas fa-user-circle fa-2x"></i>
                             {% endif %}
@@ -91,7 +99,9 @@
                         <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
                             <li><h6 class="dropdown-header">TK: {{ current_user.username }}</h6></li>
                             <li><a class="dropdown-item" href="{{ url_for('student_profile') }}">Hồ sơ của tôi</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
                         </ul>
                     </div>
@@ -111,12 +121,14 @@
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title fw-bold text-uppercase" id="introModalLabel"></h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
                 <div class="row g-0">
                     <div class="col-md-6">
-                        <img id="introModalImg" src="" class="img-fluid h-100 w-100 object-fit-cover" alt="Intro Image" style="min-height: 300px;">
+                        <img id="introModalImg" src="" class="img-fluid h-100 w-100 object-fit-cover" alt="Intro Image"
+                             style="min-height: 300px;">
                     </div>
                     <div class="col-md-6 d-flex align-items-center bg-light">
                         <div class="p-4">
