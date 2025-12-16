@@ -8,19 +8,11 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app import app, dao, login, db
 from app.models import Course, Classroom, Enrollment, Bill, EnrollEnum, BillEnum, Employee
 
-# --- IMPORT : API GỬI MAIL ---
-from app.utils import send_enrollment_confirmation_email
+# --- IMPORT SERVICES MỚI ---
+from app.services.email_service import EmailService
+from app.services.payos_service import PayOSService
 
-# ==========================================
-# CẤU HÌNH PAYOS
-# ==========================================
-from payos import PayOS
 
-payos = PayOS(
-    client_id="6034e4ba-0f39-486f-a024-e09f8768fc16",
-    api_key="c2feb503-3f0d-4be7-afbe-25e852fb3741",
-    checksum_key="17baf3da7ae973ddc2fab1864374c800869108488e1e835fd818a55c5d0f96d2"
-)
 
 
 # ==========================================
@@ -165,7 +157,6 @@ def checkout(class_id):
 
     # Nếu đã đăng ký, kiểm tra xem đã thanh toán chưa
     if existing_enrollment:
-        # Lấy Bill để kiểm tra
         bill = Bill.query.filter_by(enrollment_id=existing_enrollment.id).first()
         if bill and bill.status == BillEnum.PAID:
             flash("Bạn đã thanh toán khóa học này rồi!", "warning")
@@ -217,36 +208,24 @@ def create_payment_link():
             db.session.add(bill)
             db.session.commit()
 
-        # --- BƯỚC 2: TẠO PAYOS LINK ---
-        order_code = int(bill.id) + int(datetime.datetime.now().timestamp())
-
-        return_url = url_for('payment_success', _external=True)
-        cancel_url = url_for('payment_cancel', _external=True)
-
-        items = [{
-            "name": f"Hoc phi {classroom.name}",
-            "quantity": 1,
-            "price": int(classroom.course.fee)
-        }]
-
-        payment_data = {
-            "orderCode": order_code,
-            "amount": int(classroom.course.fee),
-            "description": f"Thanh toan Bill {bill.id}",
-            "items": items,
-            "returnUrl": return_url,
-            "cancelUrl": cancel_url,
-            "buyerName": current_user.name,
-            "buyerEmail": current_user.email,
-            "buyerPhone": current_user.phone_number if current_user.phone_number else "",
-            "expiredAt": None
+        # --- BƯỚC 2: GỌI SERVICE ĐỂ TẠO LINK ---
+        buyer_info = {
+            "name": current_user.name,
+            "email": current_user.email,
+            "phone": current_user.phone_number
         }
 
-        payos_create_response = payos.payment_requests.create(payment_data)
+        # Gọi PayOSService
+        checkout_url = PayOSService.create_payment_link(
+            bill_id=bill.id,
+            amount=classroom.course.fee,
+            course_name=classroom.name,
+            buyer_info=buyer_info
+        )
 
         return jsonify({
             'error': False,
-            'checkoutUrl': payos_create_response.checkout_url
+            'checkoutUrl': checkout_url
         })
 
     except Exception as e:
@@ -270,16 +249,11 @@ def payment_cancel():
 
 
 # ==========================================
-# HÀM KIỂM THỬ (MAIL)
+#  (BACKDOOR TEST)
 # ==========================================
 @app.route("/test-payment-success/<int:enrollment_id>")
 @login_required
 def test_payment_success(enrollment_id):
-    """
-    giả lập thanh toán thành công và Gửi Mail.
-    Dùng link: http://127.0.0.1:5000/test-payment-success/[ID]
-    Check ở Enrollment trong MySQl!
-    """
     try:
         enrollment = Enrollment.query.get(enrollment_id)
         if not enrollment:
@@ -295,13 +269,14 @@ def test_payment_success(enrollment_id):
         enrollment.status = EnrollEnum.APPROVED
         db.session.commit()
 
-        # 2. Gửi Mail xác nhận (luong an)
+        # 2. GỌI SERVICE GỬI MAIL (Code cũ phải gọi import lung tung, giờ gọn gàng)
         classroom = Classroom.query.get(enrollment.class_id)
         course = classroom.course
 
-        send_enrollment_confirmation_email(current_user, course, classroom)
+        # Gọi EmailService
+        EmailService.send_enrollment_confirmation(current_user, course, classroom)
 
-        flash(" Đã kích hoạt khóa học và gửi mail thành công,Vui lòng kiểm tra Email!", "success")
+        flash(" (TEST) Đã kích hoạt khóa học và gửi mail thành công!", "success")
 
     except Exception as e:
         db.session.rollback()
