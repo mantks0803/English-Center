@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ==========================================
-    // 8. LOGIC POS (THU NGÂN) - UPDATE MỚI
+    // 8. LOGIC THu ngân
     // ==========================================
 
     // a. Tìm kiếm học viên
@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // TRƯỜNG HỢP 1: Bấm nút QR nhưng đang chọn Tiền mặt -> CHẶN
             if (btnClicked && btnClicked.value === 'QR' && currentMethod === 'CASH') {
-                e.preventDefault(); // Dừng lại
+                e.preventDefault();
                 alert("Phương thức thanh toán không hợp lệ! (Bạn đang chọn Tiền mặt)");
                 return;
             }
